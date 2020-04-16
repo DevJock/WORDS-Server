@@ -1,0 +1,46 @@
+{
+  "error": {
+    "code": 501,
+    "description": "some error occured"
+  },
+  "ok": {
+    "code": 200,
+    "description": "success"
+  },
+  "created": {
+    "code": 201,
+    "description": "record created"
+  },
+  "accepted": {
+    "code": 202,
+    "description": "password accepted"
+  },
+  "partial_content": {
+    "code": 502,
+    "description": "missing data"
+  },
+  "unauthorized": {
+    "code": 503,
+    "description": "password incorrect"
+  },
+  "unauthorized_user": {
+    "code": 504,
+    "description": "Unauthorized"
+  },
+  "forbidden": {
+    "code": 505,
+    "description": "you do not have access to this page"
+  },
+  "outdated_build": {
+    "code": 510,
+    "message": "Your Build is Outdated. Download Latest BUILD."
+  },
+  "not_found": {
+    "code": 444,
+    "description": "cannot find record"
+  },
+  "conflict": {
+    "code": 509,
+    "description": "user already exists"
+  }
+}
