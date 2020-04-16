@@ -1,6 +1,6 @@
 {
     "version":1.2,
-    "builds":["Words_WindowsEditor_alpha_1.1","Words_WindowsPlayer_alpha_1.1"],
+    "builds":["Words_WindowsEditor_alpha_1.2","Words_WindowsPlayer_alpha_1.2"],
     "wordFiles":["words3.txt"],
     "message":"Welcome to WORDS x64 Edition",
     "enabled":true,

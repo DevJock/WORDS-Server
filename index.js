@@ -3,7 +3,7 @@ const fs = require("fs");
 const bodyParser = require('body-parser');
 
 const app = express();
-const port = 2610;
+const port = process.env.PORT || 2610;
 let CODES = getCodesData();
 let GAME = getGameData();
 let USERS = getUsersData();
@@ -37,16 +37,17 @@ app.post("/", function (req, res) {
     res.send(CODES.partial_content);
   }
   if (!validateBUILD(gamerData.platform)) {
-    res = CODES.outdated_build;
+    let resp = CODES.outdated_build;
     console.log(
       gamerData.gamerID + " tried logging in with " + gamerData.platform
     );
     res.send(resp);
   } else {
     updateGamePlayStatisticsForUser(gamerData);
-    let obj = getWordList(GAME.wordFiles);
+    let obj = getWordList(GAME.wordFiles[0]);
     obj["enabled"] = GAME.enabled;
-    obj["code"] = 200;
+    obj["code"] = CODES.ok.code;
+    obj["description"] = CODES.ok.description;
     res.send(obj);
   }
 });
@@ -56,12 +57,12 @@ app.post("/uploadscore", function (req, res) {
   let score = parseInt(req.body.score);
   updateScoreDataForUser(gamerID, score);
   res.setHeader("content-type", "application/json");
-  res.send(CODES.success);
+  res.send(CODES.ok);
 });
 
 app.post("/leaderboard", function (req, res) {
   res.setHeader("content-type", "application/json");
-  let resp = CODES.success;
+  let resp = CODES.ok;
   resp["leaderBoardData"] = getLeaderBoardData();
   res.send(resp);
 });
@@ -119,25 +120,25 @@ function getLeaderBoardData() {
   if (USERS.length <= 0) {
     return null;
   }
-  var leaderboard = [];
-  for (var user in USERS) {
-    var newOBJ = {};
+  let leaderboard = [];
+  for (let user in USERS) {
+    let newOBJ = {};
     newOBJ[user] = USERS[user].highScore;
     leaderboard.push(newOBJ);
   }
   return leaderboard;
 }
 
-function getWordList() {
-  var raw = fs.readFileSync("./data/" + _files[0], "utf8").trim();
-  var wordData = { words: raw };
+function getWordList(wordFile) {
+  let raw = fs.readFileSync("./data/" + wordFile, "utf8").trim();
+  let wordData = { words: raw };
   return wordData;
 }
 
 function updateScoreDataForUser(gamerID, score) {
   USERS[gamerID].scores.push(score);
-  var hs = USERS[gamerID].scores[0];
-  for (var i = 1; i < USERS[gamerID].scores.length; i++) {
+  let hs = USERS[gamerID].scores[0];
+  for (let i = 1; i < USERS[gamerID].scores.length; i++) {
     if (USERS[gamerID].scores[i] > hs) {
       hs = USERS[gamerID].scores[i];
     }
@@ -167,7 +168,7 @@ function updateGamePlayStatisticsForUser(gamerData) {
       );
     }
   } else {
-    var obj = {
+    let obj = {
       platforms: {},
       scores: [],
       highScore: 0,
@@ -180,7 +181,7 @@ function updateGamePlayStatisticsForUser(gamerData) {
 }
 
 function authenticateUser(user) {
-  for (var i = 0; i < USERS.length; i++) {
+  for (let i = 0; i < USERS.length; i++) {
     if (USERS[i].email == user.email && USERS[i].password == user.password) {
       return CODES.accepted;
     }
@@ -207,9 +208,9 @@ function validateUser(user) {
 }
 
 function listUser() {
-  var userList = [];
-  for (var i = 0; i < USERS.length; i++) {
-    var user = {
+  let userList = [];
+  for (let i = 0; i < USERS.length; i++) {
+    let user = {
       name: USERS[i].name,
       gamerID: USERS[i].gamerID,
     };
@@ -219,7 +220,7 @@ function listUser() {
 }
 
 function getUserDetailsForGamerID(gamerID) {
-  for (var i = 0; i < USERS.length; i++) {
+  for (let i = 0; i < USERS.length; i++) {
     if (USERS[i].gamerID == gamerID) {
       return {
         name: user.name,
@@ -258,7 +259,7 @@ function readAndParseJSON(fileName) {
 }
 
 function appendRawJSON(fileName, newOBJ) {
-  var jsonOBJ = readAndParseJSON(fileName);
+  let jsonOBJ = readAndParseJSON(fileName);
   jsonOBJ.push(newOBJ);
   fs.writeFileSync("./data/" + fileName, JSON.stringify(jsonOBJ));
 }
