@@ -75,9 +75,9 @@ app.post("/add", function (req, res) {
     !req.body.email
   ) {
     let messg = CODES.partial_content;
-    res.send(JSON.stringify(messg));
+    res.send(messg);
   } else {
-    let user = {
+    let user = {  
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
@@ -87,7 +87,6 @@ app.post("/add", function (req, res) {
       gameLeader: "N/A",
     };
     let resp = validateUser(user);
-
     if (resp.code == 444) {
       resp = registerNewUser(user);
     }
@@ -145,7 +144,7 @@ function updateScoreDataForUser(gamerID, score) {
   }
   USERS[gamerID].highScore = hs;
   console.log("Appending Score Data for:" + gamerID);
-  fs.writeFileSync("./data/users.json", JSON.stringify(USERS));
+  writeDataToJSON('users.json',USERS);
 }
 
 function updateGamePlayStatisticsForUser(gamerData) {
@@ -175,9 +174,9 @@ function updateGamePlayStatisticsForUser(gamerData) {
     };
     obj.platforms[gamerData.platform] = 1;
     USERS[gamerData.gamerID] = obj;
+    writeDataToJSON('users.json',USERS);
     console.log("Creating new record for:" + gamerData.gamerID);
   }
-  fs.writeFileSync("./data/users.json", JSON.stringify(USERS));
 }
 
 function authenticateUser(user) {
@@ -190,7 +189,8 @@ function authenticateUser(user) {
 }
 
 function registerNewUser(user) {
-  appendRawJSON("users.json", user);
+  USERS.push(user);
+  writeDataToJSON('users.json',USERS);
   let resp = CODES.created;
   resp.gamerID = user.gamerID;
   resp.email = user.email;
@@ -253,13 +253,17 @@ function getGameData() {
   return readAndParseJSON("game.json");
 }
 
-function readAndParseJSON(fileName) {
-  let stringIn = fs.readFileSync("./data/" + fileName, "utf8").trim();
-  return JSON.parse(stringIn);
-}
-
 function appendRawJSON(fileName, newOBJ) {
   let jsonOBJ = readAndParseJSON(fileName);
   jsonOBJ.push(newOBJ);
-  fs.writeFileSync("./data/" + fileName, JSON.stringify(jsonOBJ));
+  writeDataToJSON(fileName,jsonOBJ);
+}
+
+function writeDataToJSON(fileName, Obj){
+  fs.writeFileSync("./data/"+fileName, JSON.stringify(Obj));
+}
+
+function readAndParseJSON(fileName) {
+  let stringIn = fs.readFileSync("./data/" + fileName, "utf8").trim();
+  return JSON.parse(stringIn);
 }
