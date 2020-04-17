@@ -182,7 +182,11 @@ function updateGamePlayStatisticsForUser(gamerData) {
 function authenticateUser(user) {
   for (let i = 0; i < USERS.length; i++) {
     if (USERS[i].email == user.email && USERS[i].password == user.password) {
-      return CODES.accepted;
+      let resp = CODES.accepted;
+      resp["gamerID"] = USERS[i].gamerID;
+      resp["name"] = USERS[i].name;
+      resp["email"] = USERS[i].email;
+      return resp;
     }
   }
   return CODES.unauthorized;
